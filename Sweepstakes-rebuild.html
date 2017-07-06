@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>重构的简易抽奖小程序</title>
+    <script src="https://unpkg.com/vue"></script>
+    <style type="text/css">
+
+        body{
+            text-align: center;
+        }
+
+        #mainapp{
+            font-size: 18pt;
+
+        }
+
+        .show-result{
+            text-align: center;
+            height: auto;
+            background-color: aliceblue;
+        }
+
+        .input-user{
+            text-align: center;
+            height: auto;
+            background-color: #b3d4fc;
+        }
+
+        .input-user ul li{
+            list-style: none;
+        }
+        .input-user ul li:hover{
+            background-color: crimson;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h3>简易版抽奖小程序</h3>
+<hr>
+    <div id="mainapp">
+        <section>
+            <div class="show-result">
+                <label>
+                    <input v-bind:value="resultName">
+                </label>
+                <br>
+                <button @click="selectOne">钦定一个</button>
+                <hr>
+            </div>
+        </section>
+        <section>
+            <div class="input-user">
+                <label>
+                    <input placeholder="输入姓名" v-model="newUser" @keyup.enter="addUsers">
+                </label>
+                <ul>
+                    <li v-for="user in userList" v-text="user" @click="removeUser(user)"></li>
+                </ul>
+            </div>
+        </section>
+
+    </div>
+</body>
+
+<!--Vuejs实现功能-->
+<script>
+    //随机函数，用于随机抽取中奖人
+    function getRandomId(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    var vm = new Vue({
+        el: '#mainapp',
+        data: {
+            //中奖的姓名
+            resultName: '',
+            //添加的姓名
+            newUser: '',
+            //抽奖人列表
+            userList:['test1' , 'test2' , 'test3'],
+            //随机数
+            rid: 0
+        },
+
+        /**
+         * 添加人员方法addUsers
+         * 删除人员方法removeUser(user)
+         * 随机选择中奖人方法selectOne
+         */
+
+        methods: {
+            addUsers: function () {
+                //添加姓名栏是否为空
+                if(this.newUser.length){
+                    this.userList.push(this.newUser);
+                    this.newUser = '';
+                }
+            },
+            removeUser: function (user) {
+                this.userList.splice(this.userList.indexOf(user),1);
+            },
+            selectOne: function () {
+                if (this.rid===0){
+                    this.rid = setInterval(() => {
+                        this.resultName = this.userList[getRandomId(0, this.userList.length)]
+                    },100);
+                }else {
+                    clearInterval(this.rid);
+                    this.rid = 0;
+                }
+            }
+        }
+    })
+</script>
+</html>
